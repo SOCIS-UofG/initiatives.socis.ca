@@ -210,7 +210,7 @@ export class Prisma extends PrismaClient {
   };
 
   /**
-   * Get a initiative by its id
+   * Get an initiative by its id
    *
    * @param initiativeId The initiative id
    * @returns The initiative
@@ -226,7 +226,7 @@ export class Prisma extends PrismaClient {
   };
 
   /**
-   * Delete a initiative by its id
+   * Delete an initiative by its id
    *
    * @param initiativeId The initiative id
    * @returns The deleted initiative
@@ -242,7 +242,7 @@ export class Prisma extends PrismaClient {
   };
 
   /**
-   * Create a initiative
+   * Create an initiative
    *
    * @param initiative The initiative to create
    * @returns The created initiative
@@ -256,7 +256,7 @@ export class Prisma extends PrismaClient {
   };
 
   /**
-   * Update a initiative
+   * Update an initiative
    *
    * @param initiativeId The initiative id
    * @param data The data to update
