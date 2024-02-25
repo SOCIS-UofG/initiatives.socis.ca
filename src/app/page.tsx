@@ -24,6 +24,7 @@ export default function InitiativesPage() {
   return (
     <>
       <Navbar />
+      <CustomCursor />
       {/**<Background text={"INITATIVES"} animated={false} className="-z-10" /> */}
 
       <SessionProvider>
@@ -97,38 +98,34 @@ function Components(): JSX.Element {
    * Return the main components
    */
   return (
-    <>
-      <CustomCursor />
+    <MainWrapper className="fade-in items-start justify-start gap-12 px-12 pb-20 pt-36 lg:px-20">
+      <div className="flex flex-col items-start justify-start gap-3">
+        <h1 className="text-left text-4xl font-extrabold uppercase text-white md:text-7xl lg:text-8xl">
+          Club Initiatives
+        </h1>
+        <p className="max-w-2xl text-left text-sm font-thin text-white">
+          Explore all of the initiatives that SOCIS supports at The University
+          of Guelph. If you are interested in helping out with any of these
+          initiatives, please reach out to a club executive.
+        </p>
 
-      <MainWrapper className="fade-in items-start justify-start gap-20 px-12 pb-20 pt-36 lg:px-20">
-        <div className="flex flex-col items-start justify-start gap-3">
-          <h1 className="text-left text-4xl font-extrabold uppercase text-white md:text-7xl lg:text-8xl">
-            Club Initiatives
-          </h1>
-          <p className="max-w-2xl text-left text-sm font-thin text-white">
-            Explore all of the initiatives that SOCIS supports at The University
-            of Guelph. If you are interested in helping out with any of these
-            initiatives, please reach out to a club executive.
-          </p>
-
+        {CAN_CREATE_INITIATIVE && (
           <div className="flex w-full flex-col items-start justify-start gap-4 md:flex-row">
-            {CAN_CREATE_INITIATIVE && (
-              <LinkButton href="/create" className="w-fit">
-                Create Initiative
-              </LinkButton>
-            )}
+            <LinkButton href="/create" className="w-fit">
+              Create Initiative
+            </LinkButton>
           </div>
-        </div>
+        )}
+      </div>
 
-        {/**
-         * Render all of the initiative cards
-         */}
-        <div className="flex flex-wrap justify-center gap-10">
-          {initiatives.map((initiative) => (
-            <InitiativeCard key={initiative.id} initiative={initiative} />
-          ))}
-        </div>
-      </MainWrapper>
-    </>
+      {/**
+       * Render all of the initiative cards
+       */}
+      <div className="flex flex-wrap justify-center gap-10">
+        {initiatives.map((initiative) => (
+          <InitiativeCard key={initiative.id} initiative={initiative} />
+        ))}
+      </div>
+    </MainWrapper>
   );
 }
