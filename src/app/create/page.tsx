@@ -163,7 +163,9 @@ function Components(): JSX.Element {
      * return an error message. This is so that empty initiatives are not created.
      */
     if (!isValidInitiativeData(initiative)) {
-      return setCreationStatus(FormStatus.EMPTY_FIELDS); // setCreationStatus: void
+      setCreationStatus(FormStatus.EMPTY_FIELDS);
+
+      return;
     }
 
     /**
