@@ -11,15 +11,13 @@ export const initiativesRouter = {
   /**
    * Add a initiative to the database
    *
-   * @param input - The input object
-   * @param input.initiative - The initiative to add
+   * @returns The new initiative
    */
   createInitiative: publicProcedure
     .input(
       z.object({
         accessToken: z.string(),
         initiative: z.object({
-          id: z.string().optional(),
           name: z
             .string()
             .max(config.initiative.max.name)
@@ -43,9 +41,8 @@ export const initiativesRouter = {
       }
 
       const initiative = input.initiative as Initiative;
-      const generatedId = initiative.id || uuidv4();
       const newInitiative = await Prisma.createInitiative({
-        id: generatedId,
+        id: uuidv4(),
         name: initiative.name,
         description: initiative.description,
         image: initiative.image || config.initiative.default.image,
@@ -61,8 +58,6 @@ export const initiativesRouter = {
   /**
    * Delete a initiative from the database
    *
-   * @param input - The input object
-   * @param input.id - The id of the initiative to delete
    * @returns The deleted initiative
    */
   deleteInitiative: publicProcedure
@@ -93,8 +88,6 @@ export const initiativesRouter = {
   /**
    * Update a initiative in the database
    *
-   * @param input - The input object
-   * @param input.initiative - The initiative to update
    * @returns The updated initiative
    */
   updateInitiative: publicProcedure
@@ -156,8 +149,6 @@ export const initiativesRouter = {
   /**
    * Get a initiative by its id
    *
-   * @param input - The input object
-   * @param input.id - The id of the initiative to get
    * @returns The initiative
    */
   getInitiative: publicProcedure
