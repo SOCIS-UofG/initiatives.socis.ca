@@ -119,7 +119,7 @@ function Components(): JSX.Element {
       {/**
        * Render all of the initiative cards
        */}
-      <div className="flex flex-wrap justify-center gap-10">
+      <div className="flex w-full flex-wrap items-start justify-start gap-10">
         {initiatives.map((initiative) => (
           <InitiativeCard
             user={session?.user}

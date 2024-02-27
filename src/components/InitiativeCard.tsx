@@ -39,7 +39,7 @@ export default function InitiativeCard(
   return (
     <div
       className={cn(
-        "btn relative flex h-fit w-full flex-col items-start justify-start rounded-lg border border-primary bg-secondary p-6 duration-300 ease-in-out sm:w-96",
+        "btn relative flex h-fit w-full max-w-96 flex-col items-start justify-start rounded-lg border border-primary bg-secondary p-6 duration-300 ease-in-out sm:w-96",
         props.className,
       )}
     >
