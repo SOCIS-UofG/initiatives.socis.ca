@@ -20,7 +20,6 @@ import { type Initiative } from "@/types/initiative";
 import { isValidInitiativeData } from "@/lib/utils/initiatives";
 import config from "@/lib/config/initiative.config";
 import { trpc } from "@/lib/trpc/client";
-import { v4 as uuidv4 } from "uuid";
 
 /**
  * The status of the form.
@@ -63,21 +62,16 @@ function Components(): JSX.Element {
   const router = useRouter();
 
   const [creationStatus, setCreationStatus] = useState(FormStatus.IDLE);
-  const [initiative, setInitiative] = useState<Initiative>({
-    id: uuidv4(),
-    ...config.initiative.default,
-  });
+  const [initiative, setInitiative] = useState<Initiative>(
+    config.initiative.default as Initiative,
+  );
 
   /**
    * If the initiative is being created, the user is not authenticated, or the
    * default initiative hasn't been generated (undefined), then return a loading
    * screen.
    */
-  if (
-    sessionStatus === "loading" ||
-    creationStatus === FormStatus.LOADING ||
-    !initiative
-  ) {
+  if (sessionStatus === "loading" || creationStatus === FormStatus.LOADING) {
     return <LoadingSpinnerCenter />;
   }
 
@@ -163,7 +157,9 @@ function Components(): JSX.Element {
      * return an error message. This is so that empty initiatives are not created.
      */
     if (!isValidInitiativeData(initiative)) {
-      return setCreationStatus(FormStatus.EMPTY_FIELDS); // setCreationStatus: void
+      setCreationStatus(FormStatus.EMPTY_FIELDS);
+
+      return;
     }
 
     /**

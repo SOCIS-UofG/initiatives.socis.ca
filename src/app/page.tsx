@@ -110,11 +110,9 @@ function Components(): JSX.Element {
         </p>
 
         {CAN_CREATE_INITIATIVE && (
-          <div className="flex w-full flex-col items-start justify-start gap-4 md:flex-row">
-            <LinkButton href="/create" className="w-fit">
-              Create Initiative
-            </LinkButton>
-          </div>
+          <LinkButton href="/create" className="w-fit">
+            Create Initiative
+          </LinkButton>
         )}
       </div>
 
@@ -123,7 +121,11 @@ function Components(): JSX.Element {
        */}
       <div className="flex flex-wrap justify-center gap-10">
         {initiatives.map((initiative) => (
-          <InitiativeCard key={initiative.id} initiative={initiative} />
+          <InitiativeCard
+            user={session?.user}
+            key={initiative.id}
+            initiative={initiative}
+          />
         ))}
       </div>
     </MainWrapper>
