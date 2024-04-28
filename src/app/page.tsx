@@ -6,7 +6,7 @@ import { type Initiative } from "@/types/global/initiative";
 import { trpc } from "@/lib/trpc/client";
 import { Permission } from "@/types/global/permission";
 import InitiativeCard from "@/components/ui/InitiativeCard";
-import { Button, Spinner } from "@nextui-org/react";
+import { Button, NextUIProvider, Spinner } from "@nextui-org/react";
 import CustomCursor from "@/components/ui/global/CustomCursor";
 import MainWrapper from "@/components/ui/global/MainWrapper";
 import Background from "@/components/ui/global/Background";
@@ -21,7 +21,7 @@ import Navbar from "@/components/ui/global/Navbar";
  */
 export default function InitiativesPage() {
   return (
-    <>
+    <NextUIProvider>
       <Navbar />
       <CustomCursor />
       <Background text={"INITATIVES"} animated={false} />
@@ -29,7 +29,7 @@ export default function InitiativesPage() {
       <SessionProvider>
         <Components />
       </SessionProvider>
-    </>
+    </NextUIProvider>
   );
 }
 
