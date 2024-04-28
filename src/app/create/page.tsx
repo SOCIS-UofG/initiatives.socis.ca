@@ -253,7 +253,7 @@ function Components(): JSX.Element {
       {/**
        * If the initiative was successfully created, then display a success message.
        *
-       * This will appear before the user is redirected to the /next-steps page.
+       * This will appear before the user is redirected to the home page.
        */}
       {creationStatus === "success" && (
         <p className="text-primary">Initiative created successfully.</p>
