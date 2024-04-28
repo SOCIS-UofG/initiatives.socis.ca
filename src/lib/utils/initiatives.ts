@@ -1,4 +1,4 @@
-import { type Initiative } from "@/types/initiative";
+import { type Initiative } from "@/types/global/initiative";
 import config from "@/lib/config/initiative.config";
 
 /**

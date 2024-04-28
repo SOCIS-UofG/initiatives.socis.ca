@@ -5,35 +5,19 @@ import { usePathname } from "next/navigation";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { type FormEvent, useEffect, useState } from "react";
-import { type Initiative } from "@/types/initiative";
+import { type Initiative } from "@/types/global/initiative";
 import { type Session } from "next-auth";
 import config from "@/lib/config/initiative.config";
 import { isValidInitiativeData } from "@/lib/utils/initiatives";
-import {
-  Button,
-  CustomCursor,
-  ErrorMessage,
-  LinkButton,
-  LoadingSpinnerCenter,
-  MainWrapper,
-  Navbar,
-  SuccessMessage,
-} from "socis-components";
 import { trpc } from "@/lib/trpc/client";
 import { hasPermissions } from "@/lib/utils/permissions";
-import { Permission } from "@/types/permission";
-
-/**
- * The status of the form.
- */
-enum FormStatus {
-  IDLE,
-  LOADING,
-  SUCCESS,
-  ERROR,
-  EMPTY_FIELDS,
-  NEED_FETCH,
-}
+import { Permission } from "@/types/global/permission";
+import { type FormStatus } from "@/types/global/status";
+import Navbar from "@/components/ui/global/Navbar";
+import CustomCursor from "@/components/ui/global/CustomCursor";
+import MainWrapper from "@/components/ui/global/MainWrapper";
+import { Button } from "@nextui-org/button";
+import { Input, Spinner, Textarea } from "@nextui-org/react";
 
 /**
  * Wraps the main components in a session provider for next auth.
@@ -66,8 +50,8 @@ function Components(): JSX.Element {
   const [initiative, setInitiative] = useState<Initiative | undefined>(
     undefined,
   );
-  const [editStatus, setEditStatus] = useState(FormStatus.IDLE);
-  const [fetchStatus, setFetchStatus] = useState(FormStatus.NEED_FETCH);
+  const [editStatus, setEditStatus] = useState<FormStatus>("idle");
+  const [fetchStatus, setFetchStatus] = useState<FormStatus>("needs_fetch");
   const { mutateAsync: getInitiative } = trpc.getInitiative.useMutation();
   const { mutateAsync: updateInitiative } = trpc.updateInitiative.useMutation();
 
@@ -86,7 +70,7 @@ function Components(): JSX.Element {
      * If the initiative id is invalid or we are already fetching the initiative data,
      * then don't fetch the initiative data again.
      */
-    if (!initiativeId || fetchStatus !== FormStatus.NEED_FETCH) {
+    if (!initiativeId || fetchStatus !== "needs_fetch") {
       return;
     }
 
@@ -94,7 +78,7 @@ function Components(): JSX.Element {
      * Set the fetch status to loading so that we don't fetch the initiative again and
      * can display a loading screen to the user.
      */
-    setFetchStatus(FormStatus.LOADING);
+    setFetchStatus("loading");
 
     /**
      * Fetch the initiative data from the database.
@@ -102,15 +86,15 @@ function Components(): JSX.Element {
     getInitiative({ id: initiativeId })
       .then((data) => {
         if (!data.initiative) {
-          setFetchStatus(FormStatus.ERROR);
+          setFetchStatus("error");
           return;
         }
 
         setInitiative(data.initiative);
-        setFetchStatus(FormStatus.SUCCESS);
+        setFetchStatus("success");
       })
       .catch(() => {
-        setFetchStatus(FormStatus.ERROR);
+        setFetchStatus("error");
       });
   }, []);
 
@@ -127,14 +111,14 @@ function Components(): JSX.Element {
     session: Session,
   ): Promise<void> {
     e.preventDefault();
-    setEditStatus(FormStatus.LOADING);
+    setEditStatus("loading");
 
     /**
      * If the provideed data for the initiative being created is invalid, then
      * return an error message. This is so that empty initiatives are not created.
      */
     if (!isValidInitiativeData(initiative)) {
-      setEditStatus(FormStatus.EMPTY_FIELDS);
+      setEditStatus("empty_fields");
 
       return;
     }
@@ -142,19 +126,17 @@ function Components(): JSX.Element {
     /**
      * Update the initiative in the database.
      */
-    const res = await updateInitiative({
+    await updateInitiative({
       accessToken: session.user.secret,
       initiative,
-    });
-
-    /**
-     * If the initiative was successfully updated, then set the status to success.
-     */
-    if (res.success) {
-      setEditStatus(FormStatus.SUCCESS);
-
-      router.push("/");
-    }
+    })
+      .then(() => {
+        setEditStatus("success");
+        router.push("/");
+      })
+      .catch(() => {
+        setEditStatus("error");
+      });
   }
 
   /**
@@ -162,7 +144,7 @@ function Components(): JSX.Element {
    */
   if (!initiativeId) {
     return (
-      <MainWrapper>
+      <MainWrapper className="relative z-40 flex min-h-screen w-screen flex-col items-center justify-center p-12">
         <h1 className="text-center text-3xl font-bold text-white lg:text-5xl">
           Invalid Initiative
         </h1>
@@ -171,12 +153,9 @@ function Components(): JSX.Element {
           <p className="text-center text-sm font-light text-white lg:text-base">
             The initiative that you provided is invalid.
           </p>
-          <Link
-            href="/"
-            className="rounded-lg border border-primary px-10 py-3 text-center font-thin text-white hover:bg-emerald-900/50"
-          >
+          <Button className="btn" as={Link} color="primary" href="/">
             Go back
-          </Link>
+          </Button>
         </div>
       </MainWrapper>
     );
@@ -189,10 +168,14 @@ function Components(): JSX.Element {
   if (
     !initiative ||
     sessionStatus === "loading" ||
-    fetchStatus === FormStatus.LOADING ||
-    editStatus === FormStatus.LOADING
+    fetchStatus === "loading" ||
+    editStatus === "loading"
   ) {
-    return <LoadingSpinnerCenter />;
+    return (
+      <MainWrapper className="flex min-h-screen w-screen flex-col items-center justify-center">
+        <Spinner size="lg" color="primary" />
+      </MainWrapper>
+    );
   }
 
   /**
@@ -200,7 +183,7 @@ function Components(): JSX.Element {
    */
   if (sessionStatus !== "authenticated") {
     return (
-      <MainWrapper>
+      <MainWrapper className="relative z-40 flex min-h-screen w-screen flex-col items-center justify-center p-12">
         <h1 className="text-center text-3xl font-bold text-white lg:text-5xl">
           Invalid Session
         </h1>
@@ -209,12 +192,14 @@ function Components(): JSX.Element {
           <p className="text-center text-sm font-light text-white lg:text-base">
             Please sign in to proceed.
           </p>
-          <a
+          <Button
+            className="btn"
+            as={Link}
+            color="primary"
             href="https://auth.socis.ca/signin"
-            className="rounded-lg border border-primary px-10 py-3 text-center font-thin text-white hover:bg-emerald-900/50"
           >
             Sign in
-          </a>
+          </Button>
         </div>
       </MainWrapper>
     );
@@ -223,12 +208,12 @@ function Components(): JSX.Element {
   /**
    * If there was an error with fetching the initiative, show an error message.
    */
-  if (fetchStatus === FormStatus.ERROR) {
+  if (fetchStatus === "error") {
     return (
-      <MainWrapper>
-        <ErrorMessage>
+      <MainWrapper className="relative z-40 flex min-h-screen w-screen flex-col items-center justify-center p-12">
+        <p className="text-red-500">
           There was an error fetching the initiative. Please try again later.
-        </ErrorMessage>
+        </p>
       </MainWrapper>
     );
   }
@@ -240,7 +225,7 @@ function Components(): JSX.Element {
    */
   if (!hasPermissions(session.user, [Permission.ADMIN])) {
     return (
-      <MainWrapper>
+      <MainWrapper className="relative z-40 flex min-h-screen w-screen flex-col items-center justify-center p-12">
         <h1 className="text-center text-3xl font-bold text-white lg:text-5xl">
           Invalid Permissions
         </h1>
@@ -249,24 +234,26 @@ function Components(): JSX.Element {
           <p className="text-center text-sm font-light text-white lg:text-base">
             You do not have the permissions to manage initiatives.
           </p>
-          <a
+          <Button
+            className="btn"
+            as={Link}
+            color="primary"
             href="https://auth.socis.ca/signin"
-            className="rounded-lg border border-primary px-10 py-3 text-center font-thin text-white hover:bg-emerald-900/50"
           >
             Switch accounts
-          </a>
+          </Button>
         </div>
       </MainWrapper>
     );
   }
 
   return (
-    <MainWrapper className="p-10 pt-20 lg:p-20 lg:pt-44">
+    <MainWrapper className="flex min-h-screen w-screen flex-col items-start justify-start p-10 pt-20 lg:p-20 lg:pt-44">
       <form
         className="flex w-full flex-col"
         onSubmit={async (e) => onSubmit(e, initiative, session)}
       >
-        <h1 className="mb-7 text-5xl font-thin uppercase text-white md:text-7xl">
+        <h1 className="mb-7 text-5xl font-normal uppercase text-white md:text-7xl">
           Update Initiative
         </h1>
 
@@ -276,10 +263,11 @@ function Components(): JSX.Element {
          * The user can set the name of the initiative. This will be displayed on the initiative page.
          */}
         <label className="mb-2 text-white">Initiative Name</label>
-        <input
-          className="rounded-lg border border-primary bg-secondary px-4 py-3 text-base font-thin tracking-wider text-white duration-300 ease-in-out focus:outline-none disabled:opacity-50"
+        <Input
+          className="w-full"
           maxLength={config.initiative.max.name}
           minLength={config.initiative.min.name}
+          label="Name"
           placeholder="Name"
           type="text"
           value={initiative.name}
@@ -294,10 +282,11 @@ function Components(): JSX.Element {
          * The user can set the description of the initiative. This will be displayed on the initiative page.
          */}
         <label className="mb-2 mt-5 text-white">Initiative Description</label>
-        <textarea
-          className="rounded-lg border border-primary bg-secondary px-4 py-3 text-base font-thin tracking-wider text-white duration-300 ease-in-out focus:outline-none disabled:opacity-50"
+        <Textarea
+          className="w-full"
           maxLength={config.initiative.max.description}
           minLength={config.initiative.min.description}
+          label="Description"
           placeholder="Description"
           value={initiative.description}
           onChange={(e) =>
@@ -305,26 +294,24 @@ function Components(): JSX.Element {
           }
         />
 
-        <Button type="submit">Update Initiative</Button>
-        <LinkButton href="/">Cancel</LinkButton>
+        <Button className="btn w-full" color="primary" type="submit">
+          Update Initiative
+        </Button>
+        <Button className="btn w-1/2" as={Link} color="default" href="/">
+          Cancel
+        </Button>
       </form>
 
-      {editStatus === FormStatus.SUCCESS && (
-        <SuccessMessage>
-          <p>Initiative updated successfully!</p>
-        </SuccessMessage>
+      {editStatus === "success" && (
+        <p className="text-primary">Initiative updated successfully.</p>
       )}
 
-      {editStatus === FormStatus.ERROR && (
-        <ErrorMessage>
-          <p>There was an error creating your initiative.</p>
-        </ErrorMessage>
+      {editStatus === "error" && (
+        <p className="text-red-500">Failed to update initiative.</p>
       )}
 
-      {editStatus === FormStatus.EMPTY_FIELDS && (
-        <ErrorMessage>
-          <p>Make sure all fields are filled in.</p>
-        </ErrorMessage>
+      {editStatus === "empty_fields" && (
+        <p className="text-red-500">Please fill in all fields.</p>
       )}
     </MainWrapper>
   );
