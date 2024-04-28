@@ -14,7 +14,13 @@ import { type FormStatus } from "@/types/global/status";
 import Navbar from "@/components/ui/global/Navbar";
 import CustomCursor from "@/components/ui/global/CustomCursor";
 import MainWrapper from "@/components/ui/global/MainWrapper";
-import { Button, Input, Spinner, Textarea } from "@nextui-org/react";
+import {
+  Button,
+  Input,
+  NextUIProvider,
+  Spinner,
+  Textarea,
+} from "@nextui-org/react";
 import Link from "next/link";
 
 /**
@@ -24,14 +30,14 @@ import Link from "next/link";
  */
 export default function InitiativeCreationPage(): JSX.Element {
   return (
-    <>
+    <NextUIProvider>
       <Navbar />
       <CustomCursor />
 
       <SessionProvider>
         <Components />
       </SessionProvider>
-    </>
+    </NextUIProvider>
   );
 }
 

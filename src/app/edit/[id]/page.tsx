@@ -17,7 +17,7 @@ import Navbar from "@/components/ui/global/Navbar";
 import CustomCursor from "@/components/ui/global/CustomCursor";
 import MainWrapper from "@/components/ui/global/MainWrapper";
 import { Button } from "@nextui-org/button";
-import { Input, Spinner, Textarea } from "@nextui-org/react";
+import { Input, NextUIProvider, Spinner, Textarea } from "@nextui-org/react";
 
 /**
  * Wraps the main components in a session provider for next auth.
@@ -26,14 +26,14 @@ import { Input, Spinner, Textarea } from "@nextui-org/react";
  */
 export default function UpdateInitiativesPage(): JSX.Element {
   return (
-    <>
+    <NextUIProvider>
       <Navbar />
       <CustomCursor />
 
       <SessionProvider>
         <Components />
       </SessionProvider>
-    </>
+    </NextUIProvider>
   );
 }
 
