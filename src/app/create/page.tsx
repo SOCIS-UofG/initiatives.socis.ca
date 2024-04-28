@@ -6,7 +6,7 @@ import { type Session } from "next-auth";
 import { hasPermissions } from "@/lib/utils/permissions";
 import { Permission } from "@/types/global/permission";
 import { useRouter } from "next/navigation";
-import { type Initiative } from "@/types/global/initiative";
+import { type Initiative } from "@/types/initiative";
 import { isValidInitiativeData } from "@/lib/utils/initiatives";
 import config from "@/lib/config/initiative.config";
 import { trpc } from "@/lib/trpc/client";
@@ -64,7 +64,7 @@ function Components(): JSX.Element {
    */
   if (sessionStatus === "loading" || creationStatus === "loading") {
     return (
-      <MainWrapper className="flex min-h-screen w-screen flex-col items-center justify-center">
+      <MainWrapper className="relative z-40 flex min-h-screen w-screen flex-col items-center justify-center">
         <Spinner size="lg" color="primary" />
       </MainWrapper>
     );
@@ -183,13 +183,13 @@ function Components(): JSX.Element {
    * Return the main components for the initiatives page.
    */
   return (
-    <MainWrapper className="p-10 pt-20 lg:p-20 lg:pt-44">
+    <MainWrapper className="relative z-40 flex min-h-screen w-screen flex-col items-start justify-start gap-5 p-10 pt-20 lg:p-20 lg:pt-44">
       <form
-        className="flex w-full flex-col"
+        className="flex w-full flex-col items-start justify-start gap-5"
         onSubmit={async (e) => onSubmit(e, initiative, session)}
       >
         {/** HEADER */}
-        <h1 className="mb-7 text-5xl font-normal uppercase text-white md:text-7xl">
+        <h1 className="mb-2 text-5xl font-normal uppercase text-white md:text-7xl">
           Create Initiative
         </h1>
 
@@ -199,18 +199,20 @@ function Components(): JSX.Element {
          * The user can add a name to the initiative.
          * This will be displayed on the initiative page.
          */}
-        <label className="mb-2 text-white">Initiative Name</label>
-        <Input
-          className="w-full"
-          maxLength={config.initiative.max.name}
-          minLength={config.initiative.min.name}
-          label="Name"
-          placeholder="Name"
-          type="text"
-          onChange={(e) =>
-            setInitiative({ ...initiative, name: e.target.value })
-          }
-        />
+        <div className="flex w-full flex-col items-start justify-start gap-2">
+          <label className="text-white">Initiative Name</label>
+          <Input
+            className="w-full"
+            maxLength={config.initiative.max.name}
+            minLength={config.initiative.min.name}
+            label="Name"
+            placeholder="Name"
+            type="text"
+            onChange={(e) =>
+              setInitiative({ ...initiative, name: e.target.value })
+            }
+          />
+        </div>
 
         {/**
          * INITIATIVE DESCRIPTION
@@ -218,42 +220,38 @@ function Components(): JSX.Element {
          * The user can add a description to the initiative.
          * This will be displayed on the initiative page.
          */}
-        <label className="mb-2 mt-5 text-white">Initiative Description</label>
-        <Textarea
-          className="w-full"
-          maxLength={config.initiative.max.description}
-          minLength={config.initiative.min.description}
-          label="Description"
-          placeholder="Description"
-          onChange={(e) =>
-            setInitiative({ ...initiative, description: e.target.value })
-          }
-        />
-
-        {/**
-         * TODO: Add initiative image (banner) upload
-         */}
+        <div className="flex w-full flex-col items-start justify-start gap-2">
+          <label className="text-white">Initiative Description</label>
+          <Textarea
+            className="w-full"
+            maxLength={config.initiative.max.description}
+            minLength={config.initiative.min.description}
+            label="Description"
+            placeholder="Description"
+            onChange={(e) =>
+              setInitiative({ ...initiative, description: e.target.value })
+            }
+          />
+        </div>
 
         {/**
          * CREATE INITIATIVE
          *
-         * Once the user is finished creating the initiative, they can submit it.
-         * This will send an http request to the API and create the initiative.
-         * If the user hasn't filled in all the fields, then the initiative will not be created
-         * and an error message will be displayed.
+         * The user can create the initiative using the form.
          */}
-        <Button className="btn w-full" color="primary" type="submit">
-          Create Initiative
-        </Button>
-
-        {/**
-         * If the user doesn't want to create the initiative, then they can cancel.
-         *
-         * This will just redirect them back to the initiatives page.
-         */}
-        <Button as={Link} className="btn w-1/2" color="default" href="/">
-          Cancel
-        </Button>
+        <div className="flex w-full flex-wrap items-center justify-center gap-2">
+          <Button className="btn w-full" color="primary" type="submit">
+            Create Initiative
+          </Button>
+          <Button
+            className="btn w-full lg:w-1/2"
+            as={Link}
+            color="default"
+            href="/"
+          >
+            Cancel
+          </Button>
+        </div>
       </form>
 
       {/**
