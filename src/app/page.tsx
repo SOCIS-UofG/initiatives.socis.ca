@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { SessionProvider, useSession } from "next-auth/react";
-import { type Initiative } from "@/types/global/initiative";
+import { type Initiative } from "@/types/initiative";
 import { trpc } from "@/lib/trpc/client";
 import { Permission } from "@/types/global/permission";
 import InitiativeCard from "@/components/ui/InitiativeCard";
@@ -78,7 +78,7 @@ function Components(): JSX.Element {
    */
   if (sessionStatus === "loading" || status === "loading") {
     return (
-      <MainWrapper className="flex min-h-screen w-screen flex-col items-center justify-center">
+      <MainWrapper className="relative z-40 flex min-h-screen w-screen flex-col items-center justify-center">
         <Spinner size="lg" color="primary" />
       </MainWrapper>
     );
@@ -107,11 +107,13 @@ function Components(): JSX.Element {
           out to a club executive, we&apos;d love to have you on board!
         </p>
 
-        {CAN_CREATE_INITIATIVE && (
-          <Button as={Link} color="primary" href="/create" className="w-fit">
-            Create Initiative
-          </Button>
-        )}
+        <div className="flex w-full flex-wrap items-start justify-start gap-3">
+          {CAN_CREATE_INITIATIVE && (
+            <Button as={Link} color="primary" href="/create" className="btn">
+              Create Initiative
+            </Button>
+          )}
+        </div>
       </div>
 
       {status === "error" && (

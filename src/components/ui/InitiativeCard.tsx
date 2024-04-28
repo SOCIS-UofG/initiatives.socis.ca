@@ -1,5 +1,5 @@
 import { cn } from "@/lib/utils/cn";
-import { type Initiative } from "@/types/global/initiative";
+import { type Initiative } from "@/types/initiative";
 import { type User } from "next-auth";
 import { hasPermissions } from "@/lib/utils/permissions";
 import { Permission } from "@/types/global/permission";
@@ -157,8 +157,6 @@ export default function InitiativeCard(
                   .catch(() => {
                     setStatus("error");
                   });
-
-                setStatus("success");
 
                 onClose();
               }}
