@@ -1,6 +1,6 @@
 import { PrismaClient } from "@prisma/client";
 import { type User } from "next-auth";
-import { type Initiative } from "@/types/initiative";
+import { type Initiative } from "@/types/global/initiative";
 
 export class Prisma extends PrismaClient {
   constructor() {

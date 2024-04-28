@@ -2,8 +2,8 @@ import { Prisma } from "@/lib/prisma";
 import { publicProcedure } from "../trpc";
 import { z } from "zod";
 import { hasPermissions } from "@/lib/utils/permissions";
-import { Permission } from "@/types/permission";
-import { type Initiative } from "@/types/initiative";
+import { Permission } from "@/types/global/permission";
+import { type Initiative } from "@/types/global/initiative";
 import config from "@/lib/config/initiative.config";
 import { v4 as uuidv4 } from "uuid";
 
@@ -33,11 +33,11 @@ export const initiativesRouter = {
     .mutation(async ({ input }) => {
       const user = await Prisma.getUserBySecretNoPassword(input.accessToken);
       if (!user) {
-        return { success: false, initiative: null };
+        throw new Error("Invalid access token");
       }
 
       if (!hasPermissions(user, [Permission.ADMIN])) {
-        return { success: false, initiative: null };
+        throw new Error("Invalid permissions");
       }
 
       const initiative = input.initiative as Initiative;
@@ -49,10 +49,10 @@ export const initiativesRouter = {
       } as Initiative);
 
       if (!newInitiative) {
-        return { success: false, initiative: null };
+        throw new Error("Failed to create initiative");
       }
 
-      return { success: true, initiative: newInitiative };
+      return { initiative: newInitiative };
     }),
 
   /**
@@ -70,19 +70,19 @@ export const initiativesRouter = {
     .mutation(async ({ input }) => {
       const user = await Prisma.getUserBySecretNoPassword(input.accessToken);
       if (!user) {
-        return { success: false, initiative: null };
+        throw new Error("Invalid access token");
       }
 
       if (!hasPermissions(user, [Permission.ADMIN])) {
-        return { success: false, initiative: null };
+        throw new Error("Invalid permissions");
       }
 
       const initiative = await Prisma.deleteInitiativeById(input.id);
       if (!initiative) {
-        return { success: false, initiative: null };
+        throw new Error("Failed to delete initiative");
       }
 
-      return { success: true, initiative };
+      return { initiative };
     }),
 
   /**
@@ -111,11 +111,11 @@ export const initiativesRouter = {
     .mutation(async ({ input }) => {
       const user = await Prisma.getUserBySecretNoPassword(input.accessToken);
       if (!user) {
-        return { success: false, initiative: null };
+        throw new Error("Invalid access token");
       }
 
       if (!hasPermissions(user, [Permission.ADMIN])) {
-        return { success: false, initiative: null };
+        throw new Error("Invalid permissions");
       }
 
       const initiative = input.initiative as Initiative;
@@ -129,10 +129,10 @@ export const initiativesRouter = {
       );
 
       if (!updatedInitiative) {
-        return { success: false, initiative: null };
+        throw new Error("Failed to update initiative");
       }
 
-      return { success: true, initiative: updatedInitiative };
+      return { initiative: updatedInitiative };
     }),
 
   /**
@@ -143,7 +143,7 @@ export const initiativesRouter = {
   getAllInitiatives: publicProcedure.mutation(async () => {
     const initiatives = await Prisma.getAllInitiatives();
 
-    return { success: true, initiatives };
+    return { initiatives };
   }),
 
   /**
@@ -160,9 +160,9 @@ export const initiativesRouter = {
     .mutation(async ({ input }) => {
       const initiative = await Prisma.getInitiativeById(input.id);
       if (!initiative) {
-        return { success: false, initiative: null };
+        throw new Error("Failed to get initiative");
       }
 
-      return { success: true, initiative };
+      return { initiative };
     }),
 };
