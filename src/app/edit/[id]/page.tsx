@@ -153,12 +153,9 @@ function Components(): JSX.Element {
           <p className="text-center text-sm font-light text-white lg:text-base">
             The initiative that you provided is invalid.
           </p>
-          <Link
-            href="/"
-            className="rounded-lg border border-primary px-10 py-3 text-center font-thin text-white hover:bg-emerald-900/50"
-          >
+          <Button className="btn" as={Link} color="primary" href="/">
             Go back
-          </Link>
+          </Button>
         </div>
       </MainWrapper>
     );
@@ -195,12 +192,14 @@ function Components(): JSX.Element {
           <p className="text-center text-sm font-light text-white lg:text-base">
             Please sign in to proceed.
           </p>
-          <a
+          <Button
+            className="btn"
+            as={Link}
+            color="primary"
             href="https://auth.socis.ca/signin"
-            className="rounded-lg border border-primary px-10 py-3 text-center font-thin text-white hover:bg-emerald-900/50"
           >
             Sign in
-          </a>
+          </Button>
         </div>
       </MainWrapper>
     );
@@ -235,12 +234,14 @@ function Components(): JSX.Element {
           <p className="text-center text-sm font-light text-white lg:text-base">
             You do not have the permissions to manage initiatives.
           </p>
-          <a
+          <Button
+            className="btn"
+            as={Link}
+            color="primary"
             href="https://auth.socis.ca/signin"
-            className="rounded-lg border border-primary px-10 py-3 text-center font-thin text-white hover:bg-emerald-900/50"
           >
             Switch accounts
-          </a>
+          </Button>
         </div>
       </MainWrapper>
     );
